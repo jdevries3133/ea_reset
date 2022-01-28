@@ -34,6 +34,7 @@ export const AutoComplete: FunctionComponent<AutoCompleteProps> = ({
       {label}
       <input
         type="text"
+        autoComplete="off"
         name={name}
         className="rounded"
         value={value}

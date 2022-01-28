@@ -1,11 +1,20 @@
 import { useState } from "react";
-import { ActionFunction, Form, Outlet } from "remix";
+import { ActionFunction, Form, Link, Outlet, redirect } from "remix";
 import { HOMEROOMS, HOMEROOM_TO_ROOM_MAPPING } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  console.log(form);
+  const homeroom = form.get("homeroom");
+  const roomNumber = form.get("roomNumber");
+
+  // TODO: validation
+
+  if (roomNumber) {
+    return redirect(`/homeroom/${homeroom}/${roomNumber}/`);
+  }
+
+  return redirect(`/homeroom/${homeroom}/`);
 };
 
 const initialState = {
@@ -22,6 +31,13 @@ export default function Index() {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <div className="w-full">
+        <Link to="/homeroom">
+          <button className="my-2 p-2 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 shadown hover:shadow-none focus:shadow-none rounded shadow">
+            reset
+          </button>
+        </Link>
+      </div>
       <Form method="post">
         <h1 className="text-xl font-bold">Reset Request</h1>
         <AutoComplete
