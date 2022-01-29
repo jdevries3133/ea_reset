@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { ActionFunction, Form, Link, Outlet, redirect } from "remix";
+import {
+  ActionFunction,
+  Form,
+  Link,
+  LoaderFunction,
+  Outlet,
+  redirect,
+} from "remix";
 import { HOMEROOMS, HOMEROOM_TO_ROOM_MAPPING } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
+import { authenticator } from "~/services/auth.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -15,6 +23,12 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   return redirect(`/homeroom/${homeroom}/`);
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  return authenticator.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
 };
 
 const initialState = {
@@ -31,13 +45,6 @@ export default function Index() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="w-full">
-        <Link to="/homeroom">
-          <button className="my-2 p-2 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 shadown hover:shadow-none focus:shadow-none rounded shadow">
-            reset
-          </button>
-        </Link>
-      </div>
       <Form method="post">
         <h1 className="text-xl font-bold">Reset Request</h1>
         <AutoComplete
@@ -55,7 +62,7 @@ export default function Index() {
         {homeroomMatched ? (
           <>
             <button
-              className="p-2 my-1 rounded bg-green-100 shadow hover:bg-green-200 hover:shadow-none focus:shadow-none"
+              className="btn-primary block bg-green-100 hover:bg-green-200 focus:bg-green-200"
               onClick={() => {
                 setState({
                   ...state,
@@ -68,13 +75,16 @@ export default function Index() {
               I am in room {HOMEROOM_TO_ROOM_MAPPING[state.homeroom]}, which is
               the default for this homeroom
             </button>
-            <button className="rounded p-2 my-2 bg-yellow-100 shadown hover:bg-yellow-200 hover:shadow-none focus:shadow-none">
+            <button className="btn-primary block bg-red-100 hover:bg-red-200 focus:bg-red-200">
               I with the homeroom in a different room
             </button>
             <input type="hidden" value={state.roomNumber} name="roomNumber" />
           </>
         ) : null}
         <Outlet />
+        <Link to="/homeroom">
+          <button className="btn-secondary">start over</button>
+        </Link>
       </Form>
     </div>
   );
