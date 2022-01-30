@@ -6,17 +6,26 @@ import { sessionStorage } from "~/services/session.server";
 // strategies will return and will store in the session
 export const authenticator = new Authenticator<OauthUser>(sessionStorage);
 
+// get environmetn variables, and validate their presence
 const googClientId = process.env.GOOGLE_CLIENT_ID;
 const googClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const redirectUri = process.env.OAUTH_CALLBACK_URI;
 
-if (!googClientId) throw new Error("google client id not defined");
-if (!googClientSecret) throw new Error("google client id not defined");
+if (!googClientId) {
+  throw new Error("google client id not defined in environment");
+}
+if (!googClientSecret) {
+  throw new Error("google client id not defined in environment");
+}
+if (!redirectUri) {
+  throw new Error("redirect uri not defined in environment");
+}
 
 const strategy = new GoogleStrategy(
   {
     clientID: googClientId,
     clientSecret: googClientSecret,
-    callbackURL: "http://localhost:3000/auth/google/callback",
+    callbackURL: redirectUri,
   },
   async ({
     accessToken,

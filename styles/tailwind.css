@@ -6,12 +6,12 @@
   .btn-primary {
     @apply p-2 my-2 rounded bg-yellow-100;
     @apply shadow rounded;
-    @apply hover:bg-yellow-200 hover:shadow-none active:bg-yellow-200;
+    @apply hover:bg-yellow-200 hover:shadow-none focus:bg-yellow-200;
   }
 
   .btn-secondary {
     @apply p-2 my-2 rounded bg-gray-100;
     @apply shadow rounded;
-    @apply hover:bg-gray-200 hover:shadow-none active:bg-gray-200;
+    @apply hover:bg-gray-200 hover:shadow-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400;
   }
 }

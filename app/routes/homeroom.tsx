@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ActionFunction,
-  Form,
-  Link,
-  LoaderFunction,
-  Outlet,
-  redirect,
-} from "remix";
+import { ActionFunction, Form, LoaderFunction, Outlet, redirect } from "remix";
 import { HOMEROOMS, HOMEROOM_TO_ROOM_MAPPING } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 import { authenticator } from "~/services/auth.server";
@@ -59,32 +52,9 @@ export default function Index() {
           }}
           querySet={HOMEROOMS}
         />
-        {homeroomMatched ? (
-          <>
-            <button
-              className="btn-primary block bg-green-100 hover:bg-green-200 focus:bg-green-200"
-              onClick={() => {
-                setState({
-                  ...state,
-                  roomNumber:
-                    HOMEROOM_TO_ROOM_MAPPING[state.homeroom] ||
-                    state.roomNumber,
-                });
-              }}
-            >
-              I am in room {HOMEROOM_TO_ROOM_MAPPING[state.homeroom]}, which is
-              the default for this homeroom
-            </button>
-            <button className="btn-primary block bg-red-100 hover:bg-red-200 focus:bg-red-200">
-              I with the homeroom in a different room
-            </button>
-            <input type="hidden" value={state.roomNumber} name="roomNumber" />
-          </>
-        ) : null}
         <Outlet />
-        <Link to="/homeroom">
-          <button className="btn-secondary">start over</button>
-        </Link>
+        {homeroomMatched && <button className="block btn-primary">next</button>}
+        <button className="block btn-secondary">start over</button>
       </Form>
     </div>
   );

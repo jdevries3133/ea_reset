@@ -6,7 +6,7 @@
   "scripts": {
     "build": "remix build",
     "build:tailwind": "npx tailwindcss -i styles/tailwind.css -o app/tailwind.css",
-    "dev": "concurrently \"remix dev\" \"npm run build:tailwind -- --watch\"",
+    "dev": "concurrently \"PORT=8000 remix dev\" \"npm run build:tailwind -- --watch\"",
     "postinstall": "remix setup node",
     "start": "remix-serve build"
   },

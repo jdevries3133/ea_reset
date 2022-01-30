@@ -17,7 +17,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const { homeroomId } = useParams();
   const [roomNumber, setRoomNumber] = useState("");
 
   return (
