@@ -1,21 +1,48 @@
-import { useState } from "react";
-import { ActionFunction, Form, LoaderFunction, Outlet, redirect } from "remix";
-import { HOMEROOMS, HOMEROOM_TO_ROOM_MAPPING } from "~/constants";
+import { useRef, useState } from "react";
+import {
+  ActionFunction,
+  Form,
+  Link,
+  LoaderFunction,
+  Outlet,
+  redirect,
+  useActionData,
+  useParams,
+} from "remix";
+import { HOMEROOMS, ROOMS } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 import { authenticator } from "~/services/auth.server";
 
 export const action: ActionFunction = async ({ request }) => {
+  // parse form
   const form = await request.formData();
   const homeroom = form.get("homeroom");
   const roomNumber = form.get("roomNumber");
 
-  // TODO: validation
+  // validation
+  let isHomeroomValid =
+    typeof homeroom === "string" && HOMEROOMS.includes(homeroom);
+  let isRoomNumberValid =
+    typeof roomNumber === "string" && ROOMS.includes(roomNumber);
 
-  if (roomNumber) {
-    return redirect(`/homeroom/${homeroom}/${roomNumber}/`);
+  // redirects to nested routes, which are later cookie crumbs in the form
+  if (isHomeroomValid && isRoomNumberValid) {
+    return redirect(`/homeroom/${homeroom}/roomNumber/${roomNumber}/`);
   }
 
-  return redirect(`/homeroom/${homeroom}/`);
+  if (isHomeroomValid) {
+    return redirect(`/homeroom/${homeroom}/roomNumber/`);
+  }
+
+  // assemble validation errors
+  const values = Object.fromEntries(form);
+  const ret: { values: any; errors: string[] } = {
+    values,
+    errors: [],
+  };
+  if (!isHomeroomValid) ret.errors.push("homeroom is not valid");
+  if (!isRoomNumberValid) ret.errors.push("room number is not valid");
+  return ret;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -24,17 +51,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 };
 
-const initialState = {
-  roomNumber: "",
-  homeroom: "",
-  teacher: "",
-  customHomeroom: false,
-};
-
 export default function Index() {
-  const [state, setState] = useState(initialState);
-
-  const homeroomMatched = state.homeroom in HOMEROOM_TO_ROOM_MAPPING;
+  const { homeroomId: homeroomIdParam } = useParams();
+  const actionData = useActionData();
+  const initialHomeroom = actionData ? actionData.homeroom : "";
+  const [homeroom, setHomeroom] = useState(homeroomIdParam || initialHomeroom);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -43,19 +64,27 @@ export default function Index() {
         <AutoComplete
           name="homeroom"
           label="Homeroom"
-          value={state.homeroom}
+          value={homeroom}
+          disabled={!!homeroomIdParam}
           onChange={(e) => {
-            setState({
-              ...state,
-              homeroom: (e.target as HTMLInputElement).value.toUpperCase(),
-            });
+            setHomeroom((e.target as HTMLInputElement).value.toUpperCase());
           }}
           querySet={HOMEROOMS}
         />
+
+        {actionData?.errors instanceof Array &&
+          actionData.errors.map((err: String, i: Number) => (
+            <p key={i.toString() + err} className="text-red-600">
+              {err}
+            </p>
+          ))}
+
         <Outlet />
-        {homeroomMatched && <button className="block btn-primary">next</button>}
-        <button className="block btn-secondary">start over</button>
+        <button className="block btn-primary">next</button>
       </Form>
+      <Link to="/homeroom">
+        <button className="btn-secondary">Restart</button>
+      </Link>
     </div>
   );
 }

@@ -69,5 +69,4 @@ export const ROOMS = [
   "200",
   "ROOM 1-2 (BASEMENT)",
   "107",
-  "M5",
 ];
