@@ -7,7 +7,7 @@ export default function Login() {
       action="/auth/google"
       method="post"
     >
-      <button className="btn-primary bg-blue-100 hover:bg-blue-200 active:bg-blue-200">
+      <button className="btn-primary bg-blue-100 hover:bg-blue-200 focus:bg-blue-200">
         Login with Google
       </button>
     </Form>

@@ -1,48 +1,69 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ActionFunction,
   Form,
   Link,
   LoaderFunction,
-  Outlet,
-  redirect,
   useActionData,
-  useParams,
 } from "remix";
-import { HOMEROOMS, ROOMS } from "~/constants";
+import { HOMEROOMS } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 import { authenticator } from "~/services/auth.server";
+import { requestHelp } from "~/services/requestHelp";
+import { SubmitButton } from "~/components/submitButton";
+import { ChooseRoom } from "~/components/chooseRoomNumber";
+import { DescribeSituation } from "~/components/describeSituation";
+
+import STUDENTS from "~/students.json";
 
 export const action: ActionFunction = async ({ request }) => {
-  // parse form
   const form = await request.formData();
-  const homeroom = form.get("homeroom");
-  const roomNumber = form.get("roomNumber");
+  let homeroom = form.get("homeroom");
+  let roomNumber = form.get("roomNumber");
+  let description = form.get("description");
+  let extraDescription = form.get("extraDescription");
+
+  // combine description and extraDescription. Append extraDescription if
+  // description is provided, or use only extraDescription if description is
+  // falsy
+  if (typeof extraDescription === "string") {
+    description =
+      typeof description === "string"
+        ? description + extraDescription
+        : extraDescription;
+  }
 
   // validation
-  let isHomeroomValid =
-    typeof homeroom === "string" && HOMEROOMS.includes(homeroom);
-  let isRoomNumberValid =
-    typeof roomNumber === "string" && ROOMS.includes(roomNumber);
-
-  // redirects to nested routes, which are later cookie crumbs in the form
-  if (isHomeroomValid && isRoomNumberValid) {
-    return redirect(`/homeroom/${homeroom}/roomNumber/${roomNumber}/`);
-  }
-
-  if (isHomeroomValid) {
-    return redirect(`/homeroom/${homeroom}/roomNumber/`);
-  }
-
-  // assemble validation errors
-  const values = Object.fromEntries(form);
-  const ret: { values: any; errors: string[] } = {
-    values,
-    errors: [],
+  let errors = {
+    homeroom: false,
+    roomNumber: false,
+    description: false,
   };
-  if (!isHomeroomValid) ret.errors.push("homeroom is not valid");
-  if (!isRoomNumberValid) ret.errors.push("room number is not valid");
-  return ret;
+  if (!homeroom) errors.homeroom = true;
+  if (!roomNumber) errors.roomNumber = true;
+  if (!description && !extraDescription) errors.description = true;
+
+  const wholeFormValid = Object.values(errors).every((v) => !v);
+
+  if (wholeFormValid) {
+    const validatedData = {
+      homeroom: homeroom as any as string,
+      roomNumber: roomNumber as any as string,
+      description: description as any as string,
+    };
+    return await requestHelp(request, validatedData);
+  }
+
+  let students: string[] = [];
+  if (typeof homeroom === "string" && homeroom in STUDENTS) {
+    students = STUDENTS[homeroom as keyof typeof STUDENTS];
+  }
+
+  return {
+    values: { homeroom, roomNumber, description },
+    errors,
+    students,
+  };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -51,36 +72,54 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 };
 
+/**
+ * A cookie crumb form, where the next field is only shown once the previous
+ * field is set.
+ */
 export default function Index() {
-  const { homeroomId: homeroomIdParam } = useParams();
   const actionData = useActionData();
-  const initialHomeroom = actionData ? actionData.homeroom : "";
-  const [homeroom, setHomeroom] = useState(homeroomIdParam || initialHomeroom);
+
+  const [state, setState] = useState(
+    actionData?.values || {
+      homeroom: "",
+      roomNumber: "",
+      studentsInvolved: [],
+    }
+  );
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Form method="post">
+      <Form method="post" className="max-w-3xl">
         <h1 className="text-xl font-bold">Reset Request</h1>
+        {/* homeroom picker becomes disabled after initial selection */}
         <AutoComplete
           name="homeroom"
           label="Homeroom"
-          value={homeroom}
-          disabled={!!homeroomIdParam}
-          onChange={(e) => {
-            setHomeroom((e.target as HTMLInputElement).value.toUpperCase());
-          }}
+          readOnly={!!actionData?.values?.homeroom}
+          value={state.homeroom}
+          onChange={(e) =>
+            setState({
+              ...state,
+              homeroom: (e.target as HTMLInputElement).value.toUpperCase(),
+            })
+          }
           querySet={HOMEROOMS}
         />
-
-        {actionData?.errors instanceof Array &&
-          actionData.errors.map((err: String, i: Number) => (
-            <p key={i.toString() + err} className="text-red-600">
-              {err}
-            </p>
-          ))}
-
-        <Outlet />
-        <button className="block btn-primary">next</button>
+        {actionData?.errors?.homeroom && (
+          <p className="block text-red-600">homeroom cannot be blank</p>
+        )}
+        {actionData?.values?.homeroom && (
+          <ChooseRoom
+            homeroom={state.homeroom}
+            roomNumber={state.roomNumber}
+            setRoomNumber={(r) => setState({ ...state, roomNumber: r })}
+            disabled={actionData?.values?.roomNumber}
+          />
+        )}
+        {actionData?.values?.roomNumber && (
+          <DescribeSituation studentNames={actionData?.students} />
+        )}
+        <SubmitButton text="next" />
       </Form>
       <Link to="/homeroom">
         <button className="btn-secondary">Restart</button>

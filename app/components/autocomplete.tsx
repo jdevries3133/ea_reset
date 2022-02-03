@@ -12,7 +12,7 @@ type AutoCompleteProps = {
   value: string;
   onChange: EventHandler<SyntheticEvent>;
   querySet: string[];
-  disabled?: boolean;
+  readOnly?: boolean;
 };
 
 export const AutoComplete: FunctionComponent<AutoCompleteProps> = ({
@@ -21,7 +21,7 @@ export const AutoComplete: FunctionComponent<AutoCompleteProps> = ({
   value,
   onChange,
   querySet,
-  disabled = false,
+  readOnly = false,
 }) => {
   // hijack the onChange method to propagate a click on suggestion
   const makeCompletion = (value: string) => {
@@ -37,10 +37,10 @@ export const AutoComplete: FunctionComponent<AutoCompleteProps> = ({
       <input
         type="text"
         autoComplete="off"
-        disabled={disabled}
+        readOnly={readOnly}
         name={name}
         className={`disabled:bg-gray-100 rounded ${
-          isPerfectMatch && !disabled ? "bg-green-100" : null
+          isPerfectMatch && !readOnly ? "bg-green-100" : null
         }`}
         value={value}
         onChange={onChange}

@@ -1,4 +1,4 @@
-export const HOMEROOM_TO_ROOM_MAPPING: { [key: string]: string } = {
+export const HOMEROOM_TO_ROOM_MAPPING = {
   "4A": "101",
   "4B": "303",
   "4C": "302",
@@ -65,8 +65,8 @@ export const ROOMS = [
   "G5",
   "101",
   "311",
-  "ROOM 3 (BASEMENT)",
+  "Music Room",
   "200",
-  "ROOM 1-2 (BASEMENT)",
+  "Art Room",
   "107",
 ];
