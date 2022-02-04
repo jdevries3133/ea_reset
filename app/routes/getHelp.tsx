@@ -82,9 +82,13 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return authenticator.isAuthenticated(request, {
+  const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/login",
   });
+  if (!/(\w+)@empacad.org/.test(user.username)) {
+    return redirect("/empacadOnly");
+  }
+  return user;
 };
 
 /**
