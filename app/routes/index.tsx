@@ -10,7 +10,7 @@ export default function Index() {
           very quickly, without breaking the flow of instruction.
         </p>
 
-        <Link to="/homeroom">
+        <Link to="/getHelp">
           <button className="btn-primary">Get Started</button>
         </Link>
       </div>

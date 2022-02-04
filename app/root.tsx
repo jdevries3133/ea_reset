@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -49,7 +50,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Link to="/logout">
+          <button className="btn-primary mx-2">Log Out</button>
+        </Link>
+        <div className="px-2">
+          <Outlet />
+        </div>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

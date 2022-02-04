@@ -26,12 +26,15 @@ export const DescribeSituation: FunctionComponent<{
     _setPredicate(predicate);
   };
 
+  const studentsInvolved = Object.keys(involvedStudents).filter(
+    (k) => involvedStudents[k]
+  );
+
   const generatedDescription =
     predicate +
-    "\nStudents Involved: " +
-    Object.keys(involvedStudents)
-      .filter((k) => involvedStudents[k])
-      .join(", ");
+    (studentsInvolved.length
+      ? "\n\nStudents Involved: " + studentsInvolved.join(", ")
+      : "");
 
   const CARD_SELECTED_CLASSES =
     "bg-red-100 hover:bg-red-200 focus:bg-red-200 border-4 border-red-400";
@@ -89,22 +92,25 @@ export const DescribeSituation: FunctionComponent<{
         </div>
         <div className="block mt-4">
           <h1 className="text-md text-center">Who is involved?</h1>
-          <div className="flex flex-wrap gap-2 ">
-            {studentNames.map((student: string, i: number) => (
-              <button
-                className={`block btn-primary bg-green-100 hover:bg-green-200 focus:bg-green-200 ${
-                  Object.keys(involvedStudents).includes(student) &&
-                  "bg-red-100 hover:bg-red-200 focus:bg-red-200"
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleInvolved(student);
-                }}
-                key={i.toString() + student}
-              >
-                {student}
-              </button>
-            ))}
+          <div className="flex justify-center flex-wrap gap-2 ">
+            {studentNames.sort().map((student: string) => {
+              return (
+                <button
+                  className={`block btn-primary ${
+                    involvedStudents[student]
+                      ? "bg-red-100 hover:bg-red-200 focus:bg-red-200"
+                      : "bg-blue-100 hover:bg-blue-200 focus:bg-blue-200"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleInvolved(student);
+                  }}
+                  key={Math.random()}
+                >
+                  {student}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

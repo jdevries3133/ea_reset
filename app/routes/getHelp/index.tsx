@@ -4,12 +4,13 @@ import {
   Form,
   Link,
   LoaderFunction,
+  redirect,
   useActionData,
 } from "remix";
 import { HOMEROOMS } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 import { authenticator } from "~/services/auth.server";
-import { requestHelp } from "~/services/requestHelp";
+import { requestHelp } from "~/services/requestHelp.server";
 import { SubmitButton } from "~/components/submitButton";
 import { ChooseRoom } from "~/components/chooseRoomNumber";
 import { DescribeSituation } from "~/components/describeSituation";
@@ -51,7 +52,8 @@ export const action: ActionFunction = async ({ request }) => {
       roomNumber: roomNumber as any as string,
       description: description as any as string,
     };
-    return await requestHelp(request, validatedData);
+    await requestHelp(request, validatedData);
+    return redirect("/success");
   }
 
   let students: string[] = [];
@@ -119,9 +121,16 @@ export default function Index() {
         {actionData?.values?.roomNumber && (
           <DescribeSituation studentNames={actionData?.students} />
         )}
-        <SubmitButton text="next" />
+        <SubmitButton
+          text={actionData?.values?.roomNumber ? "Send Reset Request" : "next"}
+          extraClasses={
+            actionData?.values?.roomNumber
+              ? "bg-green-100 hover:bg-green-200 focus:bg-green-200"
+              : ""
+          }
+        />
       </Form>
-      <Link to="/homeroom">
+      <Link to="/getHelp">
         <button className="btn-secondary">Restart</button>
       </Link>
     </div>

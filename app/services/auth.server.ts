@@ -4,12 +4,12 @@ import { sessionStorage } from "~/services/session.server";
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
-export const authenticator = new Authenticator<OauthUser>(sessionStorage);
+export const authenticator = new Authenticator<GmailUser>(sessionStorage);
 
 // get environmetn variables, and validate their presence
-const googClientId = process.env.GOOGLE_CLIENT_ID;
-const googClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const redirectUri = process.env.OAUTH_CALLBACK_URI;
+export const googClientId = process.env.GOOGLE_CLIENT_ID;
+export const googClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+export const redirectUri = process.env.OAUTH_CALLBACK_URI;
 
 if (!googClientId) {
   throw new Error("google client id not defined in environment");
@@ -26,6 +26,7 @@ const strategy = new GoogleStrategy(
     clientID: googClientId,
     clientSecret: googClientSecret,
     callbackURL: redirectUri,
+    scope: "openid profile email https://www.googleapis.com/auth/gmail.send",
   },
   async ({
     accessToken,
