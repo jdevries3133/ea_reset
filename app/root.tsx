@@ -1,16 +1,19 @@
 import {
-  Link,
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
 import { LinksFunction } from "@remix-run/react/routeModules";
 
 import styles from "./tailwind.css";
+import { authenticator } from "./services/auth.server";
+import { AuthHeader } from "./components/authHeader";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
@@ -22,7 +25,12 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  return await authenticator.isAuthenticated(request);
+};
+
 export default function App() {
+  const auth = useLoaderData();
   return (
     <html lang="en">
       <head>
@@ -50,9 +58,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Link to="/logout">
-          <button className="btn-primary mx-2">Log Out</button>
-        </Link>
+        <AuthHeader auth={auth} />
         <div className="px-2">
           <Outlet />
         </div>

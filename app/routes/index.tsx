@@ -6,8 +6,8 @@ export default function Index() {
       <div className="max-w-sm flex items-center justify-center flex-col">
         <h1 className="block text-lg">EA Reset Request</h1>
         <p className="block text-gray-800 text-justify">
-          A collection of nifty forms that let you request a classroom reset
-          very quickly, without breaking the flow of instruction.
+          A nifty form that integrates with google classroom, and helps you ask
+          for help faster.
         </p>
 
         <Link to="/getHelp">
