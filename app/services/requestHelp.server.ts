@@ -1,4 +1,5 @@
 import { redirect } from "remix";
+import { getContact, HOMEROOM_TO_ROOM_MAPPING } from "~/constants";
 import { authenticator } from "./auth.server";
 import { getClient } from "./gmail.service";
 
@@ -9,7 +10,7 @@ export const requestHelp = async (
     roomNumber,
     description,
   }: {
-    homeroom: string;
+    homeroom: keyof typeof HOMEROOM_TO_ROOM_MAPPING;
     roomNumber: string;
     description: string;
   }
@@ -26,18 +27,25 @@ export const requestHelp = async (
   const email = `Content-Type: text/plain; charset="UTF-8"
 "MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: jdevries3133@gmail.com
+To: ${getContact(homeroom).join(", ")}
 From: me
-Subject: Reset in ${homeroom}, room ${roomNumber}
+Subject: Reset in homeroom ${homeroom}, room ${roomNumber}
 
 ${description}
+
+
 Automated reset request created by https://reset.empacadmusic.org:
 `;
 
-  const res = await client.users.messages.send({
-    userId: user.googleExtras.id,
-    requestBody: {
-      raw: btoa(email),
-    },
-  });
+  console.log("sending email");
+  console.log(email);
+
+  // commenting out to avoid sending a real email
+  //
+  // await client.users.messages.send({
+  //   userId: user.googleExtras.id,
+  //   requestBody: {
+  //     raw: btoa(email),
+  //   },
+  // });
 };
