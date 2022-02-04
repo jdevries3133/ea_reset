@@ -41,7 +41,6 @@ Automated reset request created by https://reset.empacadmusic.org/
     console.log("sending email");
     console.log(email);
   } else {
-    debugger;
     await client.users.messages.send({
       userId: user.googleExtras.id,
       requestBody: {

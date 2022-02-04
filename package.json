@@ -4,7 +4,8 @@
   "description": "",
   "license": "",
   "scripts": {
-    "build": "remix build",
+    "build": "npm run build:tailwind && npm run build:remix",
+    "build:remix": "remix build",
     "build:tailwind": "npx tailwindcss -i styles/tailwind.css -o app/tailwind.css",
     "dev": "concurrently \"PORT=8000 remix dev\" \"npm run build:tailwind -- --watch\"",
     "postinstall": "remix setup node",
