@@ -37,15 +37,16 @@ ${description}
 Automated reset request created by https://reset.empacadmusic.org:
 `;
 
-  console.log("sending email");
-  console.log(email);
-
-  // commenting out to avoid sending a real email
-  //
-  // await client.users.messages.send({
-  //   userId: user.googleExtras.id,
-  //   requestBody: {
-  //     raw: btoa(email),
-  //   },
-  // });
+  if (process.env.NODE_ENV === "development") {
+    console.log("sending email");
+    console.log(email);
+  } else {
+    debugger;
+    await client.users.messages.send({
+      userId: user.googleExtras.id,
+      requestBody: {
+        raw: btoa(email),
+      },
+    });
+  }
 };
