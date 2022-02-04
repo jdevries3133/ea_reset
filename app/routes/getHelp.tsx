@@ -7,7 +7,7 @@ import {
   redirect,
   useActionData,
 } from "remix";
-import { HOMEROOMS } from "~/constants";
+import { HOMEROOMS, HOMEROOM_TO_ROOM_MAPPING, ROOMS } from "~/constants";
 import { AutoComplete } from "~/components/autocomplete";
 import { authenticator } from "~/services/auth.server";
 import { requestHelp } from "~/services/requestHelp.server";
@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (typeof extraDescription === "string") {
     description =
       typeof description === "string"
-        ? description + extraDescription
+        ? `${description}\n${extraDescription}`
         : extraDescription;
   }
 
@@ -40,15 +40,28 @@ export const action: ActionFunction = async ({ request }) => {
     roomNumber: false,
     description: false,
   };
+
+  // homeroom must be present, and a member of HOMEROOM_TO_ROOM_MAPPING
   if (!homeroom) errors.homeroom = true;
+  if (
+    homeroom !== null &&
+    !((homeroom as string) in HOMEROOM_TO_ROOM_MAPPING)
+  ) {
+    errors.homeroom = true;
+  }
+  // roomNumber must be present, and a member of ROOMS
   if (!roomNumber) errors.roomNumber = true;
+  if (roomNumber !== null && !ROOMS.includes(roomNumber as string)) {
+    errors.roomNumber = true;
+  }
+  // either description or extraDescription must be present
   if (!description && !extraDescription) errors.description = true;
 
   const wholeFormValid = Object.values(errors).every((v) => !v);
 
   if (wholeFormValid) {
     const validatedData = {
-      homeroom: homeroom as any as string,
+      homeroom: homeroom as any as keyof typeof HOMEROOM_TO_ROOM_MAPPING,
       roomNumber: roomNumber as any as string,
       description: description as any as string,
     };
@@ -106,6 +119,7 @@ export default function Index() {
             })
           }
           querySet={HOMEROOMS}
+          tabIndex={1}
         />
         {actionData?.errors?.homeroom && (
           <p className="block text-red-600">homeroom cannot be blank</p>
