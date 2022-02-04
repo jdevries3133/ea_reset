@@ -34,7 +34,7 @@ Subject: Reset in homeroom ${homeroom}, room ${roomNumber}
 ${description}
 
 
-Automated reset request created by https://reset.empacadmusic.org:
+Automated reset request created by https://reset.empacadmusic.org/
 `;
 
   if (process.env.NODE_ENV === "development") {
