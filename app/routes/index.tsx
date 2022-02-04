@@ -10,7 +10,7 @@ export default function Index() {
           for help faster.
         </p>
 
-        <Link to="/getHelp">
+        <Link to="/getHelp" tabIndex={-1}>
           <button className="btn-primary">Get Started</button>
         </Link>
       </div>

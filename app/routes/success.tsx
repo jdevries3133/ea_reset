@@ -9,7 +9,7 @@ export default function Success() {
         <p>
           You can see the email in your Gmail outbox to confirm its delivery.
         </p>
-        <Link to="/getHelp">
+        <Link to="/getHelp" tabIndex={-1}>
           <button className="btn-primary">Request Help Again</button>
         </Link>
       </div>

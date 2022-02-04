@@ -119,7 +119,6 @@ export default function Index() {
             })
           }
           querySet={HOMEROOMS}
-          tabIndex={1}
         />
         {actionData?.errors?.homeroom && (
           <p className="block text-red-600">homeroom cannot be blank</p>
@@ -144,7 +143,7 @@ export default function Index() {
           }
         />
       </Form>
-      <Link to="/getHelp">
+      <Link to="/getHelp" tabIndex={-1}>
         <button className="btn-secondary">Restart</button>
       </Link>
     </div>

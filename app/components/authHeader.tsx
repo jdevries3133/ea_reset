@@ -5,11 +5,11 @@ export const AuthHeader: FunctionComponent<{
   auth: GmailUser;
 }> = ({ auth }) => {
   return auth ? (
-    <Link to="/logout">
+    <Link to="/logout" tabIndex={-1}>
       <button className="btn-primary mx-2">Log Out</button>
     </Link>
   ) : (
-    <Link to="/login">
+    <Link to="/login" tabIndex={-1}>
       <button className="btn-primary mx-2">Log In</button>
     </Link>
   );
