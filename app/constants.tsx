@@ -71,16 +71,12 @@ export const ROOMS = [
   "107",
 ];
 
-export const MS_EMAILS = ["nkanuteh@empacad.org", "mclinton@empacad.org"];
-export const UES_EMAILS = ["balbanese@empacad.org", "mdiaz@empacad.org"];
+export const MS_EMAILS = ["jdevries3133@gmail.com"];
+export const UES_EMAILS = ["jdevries3133@gmail.com"];
 
 export const getContact = (
   homeroom: keyof typeof HOMEROOM_TO_ROOM_MAPPING
 ): typeof MS_EMAILS | typeof UES_EMAILS => {
-  if (process.env.NODE_ENV !== "production") {
-    return ["jdevries3133@gmail.com"];
-  }
-
   const grade = homeroom.slice(0, 1);
   if (["4", "5"].includes(grade)) {
     return UES_EMAILS;
