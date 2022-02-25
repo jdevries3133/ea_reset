@@ -14,8 +14,7 @@ import { requestHelp } from "~/services/requestHelp.server";
 import { SubmitButton } from "~/components/submitButton";
 import { ChooseRoom } from "~/components/chooseRoomNumber";
 import { DescribeSituation } from "~/components/describeSituation";
-
-import STUDENTS from "~/students.json";
+import { STUDENTS } from "~/services/students.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();

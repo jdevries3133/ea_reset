@@ -2,12 +2,14 @@
 of student names using the teacherhelper module."""
 
 import json
+from pathlib import Path
 
 from teacherhelper import Helper
 
 
-helper = Helper.read_cache()
+BASE_DIR = Path(__file__).parent
 
+helper = Helper.read_cache()
 
 mapping = {}
 for key, value in helper.homerooms.items():
@@ -40,5 +42,5 @@ teacher_name_to_homeroom_code = {
 updated = {teacher_name_to_homeroom_code[key] : value for key, value in mapping.items()}
 
 
-with open('app/students.json', 'w') as fp:
+with open(Path(BASE_DIR, 'students.json'), 'w') as fp:
     json.dump(updated, fp)

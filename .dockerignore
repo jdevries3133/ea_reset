@@ -6,6 +6,3 @@ node_modules
 .env
 app/tailwind.css
 students.json
-
-.terraform*
-secret.auto.tfvars
